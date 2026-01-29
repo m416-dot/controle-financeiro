@@ -1,0 +1,23 @@
+{
+  "name": "controle-financeiro",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/m416-dot/controle-financeiro.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/m416-dot/controle-financeiro/issues"
+  },
+  "homepage": "https://github.com/m416-dot/controle-financeiro#readme",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.93.3"
+  }
+}
