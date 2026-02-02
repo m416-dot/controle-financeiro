@@ -1,0 +1,146 @@
+<!DOCTYPE html> <!-- diz ao navegador que este documento é um HTML5 -->
+<html lang="pt-BR"> <!-- define o idioma principal do documento como português do Brasil -->
+<head>
+<meta charset="UTF-8"> <!-- define a codificação de caracteres como UTF-8(permite usar letras como ç, ã, etc) -->
+    <title>Controle Financeiro</title>
+    <style>
+
+    </style>
+</head>
+<body>
+
+    <h1>Controle Financeiro</h1>
+
+    <h3>Nova Movimentação</h3>
+
+    <!-- HTML DO FORMULARIO -->
+
+    <div class="formulario"> <!-- div para agrupar os elementos do formulario -->
+        <select id="tipo">
+            <option value="Receita">Receita</option>
+            <option value="Despesa">Despesa</option>
+        </select>
+        <input type="date" id="data"/>
+        <input type="number" id="valor" placeholder="Valor"/>
+        <input type="text" id="descricao" placeholder="Descrição"/>
+
+        <button onclick="adicionar()">Adicionar</button> <!-- botão que chama a função adicionar() quando clicado -->
+    </div>
+
+    <!-- TABELA DE VALORES -->
+    <table>
+        <thead>
+            <tr>
+                <th>Tipo</th>
+                <th>Data</th>
+                <th>Valor</th>
+                <th>Descrição</th>
+            </tr>
+        </thead>
+        <tbody id="tabela"></tbody>
+    </table>
+    <script>
+    
+        // Variável para armazenar as movimentações
+        let movimentacoes = []
+        /////JSON.parse(localStorage.getItem('movimentacoes')) || []; // converte de texto para array, armazena as movimentações no localStorage (memória do navegador)
+
+        // Função para carregar a tabela com as movimentações
+        function atualizarTabela() {
+            const tabela = document.getElementById("tabela");
+            tabela.innerHTML = ""; // limpa a tabela antes de carregar os dados
+
+            movimentacoes.forEach((item, index) => {
+                tabela.innerHTML += `
+                    <tr>
+                        <td>${item.tipo}</td>
+                        <td>${item.data}</td>
+                        <td>${item.valor}</td>
+                        <td>${item.descricao}</td>
+                        <!-- <td><button onclick="excluir(${index})">Excluir</button></td> botão que chama a função excluir() passando o índice do item -->
+                        <td><button onclick="excluir(${item.id})">Excluir</button></td>
+                    </tr>
+                `; // adiciona uma nova linha na tabela para cada movimentação
+            });
+        }
+
+        // Função para carregar as movimentações do servidor
+        function carregarMovimentacoes() {
+            fetch('/movimentacoes')
+                .then(resposta => resposta.json())
+                .then(dados => {
+                    movimentacoes = dados;
+                    atualizarTabela();
+                });
+        }
+
+        // Função para adicionar uma movimentação
+        function adicionar() { 
+            const tipo = document.getElementById('tipo').value;
+            const data = document.getElementById('data').value;
+            const valor = document.getElementById('valor').value;
+            const descricao = document.getElementById('descricao').value;
+
+            /////movimentacoes.push({ tipo, data, valor, descricao }); // adiciona a nova movimentação ao array
+
+            /////localStorage.setItem('movimentacoes', JSON.stringify(movimentacoes)); // converte o array para texto e armazena no localStorage
+                    
+            /////atualizarTabela(); // atualiza a tabela para mostrar a nova movimentação
+
+            fetch('/movimentacoes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    tipo,
+                    data,
+                    valor,
+                    descricao
+                })
+            }).then(() => {
+                carregarMovimentacoes(); // recarrega as movimentações do servidor
+            });
+        }
+
+        // Função para excluir uma movimentação
+        /////function excluir(indice) {
+            /////const itemParaExcluir = movimentacoes[indice];
+            /////movimentacoes = movimentacoes.filter(item => item !== itemParaExcluir); // remove o item do array
+
+            /////localStorage.setItem('movimentacoes', JSON.stringify(movimentacoes)); // atualiza o localStorage
+
+            /////atualizarTabela(); // atualiza a tabela
+        /////}
+
+        // Carrega a tabela ao iniciar a página
+        /////atualizarTabela();
+
+        function excluir(id) {
+            fetch(`/movimentacoes/${id}`, {
+                method: 'DELETE'
+            }).then(() => {
+                carregarMovimentacoes(); // recarrega as movimentações do servidor
+            });
+        }
+
+        carregarMovimentacoes();
+    </script>
+</body>
+</html>
+<!--
+div = divs são como caixas usadas para agrupar elementos HTML e aplicar estilos ou scripts a eles.
+input = é um campo onde o usuário pode inserir dados, vem acompanhado de type, que define o tipo de dado que pode ser inserido (texto, número, data, etc).
+let = é usado para criar uma variável.
+function = é usado para definir uma função, que é um bloco de código que pode ser executado quando chamado.
+const = é usado para declarar uma constante, ou seja, um valor que não pode ser alterado depois de definido.
+document.getElementById = busca um elemento HTML pelo seu ID.
+innerHTML = é tudo que está dentro de um elemento HTML. (No nosso caso, a tabela)
+table = cria uma tabela estruturada para exibir dados em linhas e colunas.
+thead = é o cabeçalho de uma tabela, onde ficam os títulos das colunas.
+tr = representa uma linha em uma tabela.
+th = representa uma célula de cabeçalho em uma tabela (geralmente em negrito).
+tbody = é o corpo da tabela, onde ficam os dados reais.
+indice = posição de um item dentro de um array (começa do 0).
+filter = cria um novo array após aplicar uma condição para filtrar os itens. (no nosso caso, remove o item selecionado e substitui o índice do item).
+-->
